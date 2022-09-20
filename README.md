@@ -21,4 +21,6 @@
 
 ### and if you don't know what to do then you shouldn't be using this tool
 
-### node HelloWorld.js
+```bash
+node HelloWorld.js
+```
