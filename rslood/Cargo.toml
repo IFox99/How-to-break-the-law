@@ -1,0 +1,11 @@
+[package]
+name = "rslood"
+version = "0.1.0"
+authors = ["RuM <18311071+ru44@users.noreply.github.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "2.33"
+rand = "0.7"
